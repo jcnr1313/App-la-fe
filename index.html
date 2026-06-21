@@ -10,37 +10,50 @@
     <link rel="apple-touch-icon" href="icono-192.png">
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="style.css">
+    <!-- Lucide Icons cargado al principio para evitar fallos de renderizado -->
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
 
+    <!-- PANTALLA DE LOGIN (Diseño mejorado con fondo en degradado y elementos más estilizados) -->
     <div id="login-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; gap: 20px; background: linear-gradient(135deg, #0056b3 0%, #002d62 100%); padding: 20px; box-sizing: border-box;">
         
+        <!-- CONTENEDOR VISUAL DEL LOGIN -->
         <div style="display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 340px; text-align: center;">
             
+            <!-- LOGO MÁS GRANDE Y MEJORADO EN EL LOGIN -->
             <img src="IMG_5462.jpeg" alt="Hospital La Fe" style="width: 100%; max-width: 340px; height: auto; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1);">
             
+            <!-- TITULO -->
             <h2 style="color: #ffffff; margin: 0 0 15px 0; font-size: 24px; font-weight: 600; letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.15);">Iniciar Sesión</h2>
             
+            <!-- FORMULARIO -->
             <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
                 <input type="text" id="username" placeholder="Usuario" style="padding: 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); font-size: 16px; background-color: rgba(255,255,255,0.95); box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); outline: none; box-sizing: border-box;">
                 <input type="password" id="password" placeholder="Contraseña" style="padding: 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); font-size: 16px; background-color: rgba(255,255,255,0.95); box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); outline: none; box-sizing: border-box;">
                 <button id="btn-login" style="padding: 14px; background: #007aff; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.25); transition: background 0.2s; margin-top: 5px;">Entrar</button>
             </div>
             
+            <!-- ERROR -->
             <p id="login-error" style="color: #ff453a; display: none; margin-top: 15px; font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,0.3); font-size: 14px;">Usuario o contraseña incorrectos</p>
         </div>
     </div>
 
+    <!-- CONTENIDO PRINCIPAL DE LA APP -->
     <div id="app-content" style="display: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
         <header style="background: #ffffff; box-shadow: 0 1px 10px rgba(0,0,0,0.05); margin-bottom: 10px;">
-            <div style="display: flex; flex-direction: column; align-items: center; padding: 15px 20px 15px 20px; gap: 15px;">
+            <!-- CONTENEDOR CON LOGO INTERNO MAXIMIZADO -->
+            <div style="display: flex; flex-direction: column; align-items: center; padding: 20px 20px 15px 20px; gap: 15px; position: relative;">
                 
-                <div style="display: flex; width: 100%; justify-content: space-between; align-items: center;">
-                    <img src="IMG_5462.jpeg" alt="Logo La Fe" style="height: 80px; width: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border: 1px solid #e5e5ea;">
-                    <button id="btn-logout" style="padding: 10px 18px; background: #ff3b30; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 14px; box-shadow: 0 2px 6px rgba(255,59,48,0.2);">Salir</button>
+                <!-- BOTÓN SALIR UBICADO EN LA ESQUINA SUPERIOR DERECHA PARA MEJORAR EL DISEÑO -->
+                <button id="btn-logout" style="position: absolute; top: 20px; right: 20px; padding: 8px 14px; background: #ff3b30; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px; box-shadow: 0 2px 6px rgba(255,59,48,0.2); z-index: 10;">Salir</button>
+                
+                <!-- LOGO INTERNO EN TAMAÑO MAXI (140px de alto, centrado e imponente) -->
+                <div style="width: 100%; display: flex; justify-content: center; margin-top: 10px;">
+                    <img src="IMG_5462.jpeg" alt="Logo La Fe" style="height: 140px; width: 100%; max-width: 400px; object-fit: cover; border-radius: 14px; box-shadow: 0 6px 16px rgba(0,0,0,0.18); border: 1px solid #e5e5ea;">
                 </div>
                 
+                <!-- Textos del encabezado -->
                 <div style="text-align: center; width: 100%; margin-top: 5px;">
                     <h1 style="margin: 0; font-size: 26px; font-weight: 700; color: #1d1d1f; letter-spacing: -0.5px;">Hospital La Fe</h1>
                     <p style="margin: 4px 0 0 0; color: #8e8e93; font-size: 15px; font-weight: 500;">Control de Líneas y RAEs</p>
@@ -60,6 +73,7 @@
             <div id="ascensores-container" class="grid-container" style="padding: 0 20px;"></div>
         </main>
         
+        <!-- VENTANA MODAL PARA EDITAR -->
         <div id="edit-modal" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index: 1000; font-family: sans-serif;">
             <div style="background: white; padding: 20px; border-radius: 12px; width: 300px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
                 <h3 id="modal-title" style="margin-top: 0; color: #1d1d1f;">Editar</h3>
@@ -67,6 +81,7 @@
                 <label style="display:flex; flex-direction:column; gap:4px; font-weight:bold; font-size:14px; color:#555;">Detalles: <input type="text" id="edit-tipo" style="padding:8px; border:1px solid #ccc; border-radius:6px; font-weight:normal;"></label>
                 <label style="display:flex; flex-direction:column; gap:4px; font-weight:bold; font-size:14px; color:#555;">IMEI: <input type="text" id="edit-imei" style="padding:8px; border:1px solid #ccc; border-radius:6px; font-weight:normal;"></label>
                 <label style="display:flex; flex-direction:column; gap:4px; font-weight:bold; font-size:14px; color:#555;">Línea Tlf: <input type="text" id="edit-tlf" style="padding:8px; border:1px solid #ccc; border-radius:6px; font-weight:normal;"></label>
+                <!-- CAMPOS DE LA OCA EN EL MODAL -->
                 <label style="display:flex; flex-direction:column; gap:4px; font-weight:bold; font-size:14px; color:#555;">Última OCA: <input type="text" id="edit-ultima-oca" style="padding:8px; border:1px solid #ccc; border-radius:6px; font-weight:normal;"></label>
                 <label style="display:flex; flex-direction:column; gap:4px; font-weight:bold; font-size:14px; color:#555;">Próxima OCA: <input type="text" id="edit-proxima-oca" style="padding:8px; border:1px solid #ccc; border-radius:6px; font-weight:normal;"></label>
                 
