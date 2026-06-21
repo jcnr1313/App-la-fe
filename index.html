@@ -15,18 +15,19 @@
 </head>
 <body>
 
-    <!-- PANTALLA DE LOGIN -->
-    <div id="login-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; gap: 15px; background-color: #f5f5f7; padding: 20px; box-sizing: border-box;">
+    <!-- PANTALLA DE LOGIN (Fondo azul para que resalte el texto blanco) -->
+    <div id="login-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; gap: 15px; background-color: #0056b3; padding: 20px; box-sizing: border-box;">
         <!-- LOGO CORREGIDO EN EL LOGIN -->
-        <img src="IMG_5462.jpeg" alt="Hospital La Fe" style="width: 100%; max-width: 280px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 5px;">
+        <img src="IMG_5462.jpeg" alt="Hospital La Fe" style="width: 100%; max-width: 280px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); margin-bottom: 5px;">
         
-        <h2 style="color: #1d1d1f; margin: 0;">Iniciar Sesión</h2>
+        <!-- TEXTO CAMBIADO A COLOR BLANCO -->
+        <h2 style="color: #ffffff; margin: 0; font-weight: bold; text-shadow: 0 1px 3px rgba(0,0,0,0.2);">Iniciar Sesión</h2>
         <div style="display: flex; flex-direction: column; gap: 10px; width: 280px;">
             <input type="text" id="username" placeholder="Usuario" style="padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;">
             <input type="password" id="password" placeholder="Contraseña" style="padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;">
-            <button id="btn-login" style="padding: 12px; background: #007aff; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px;">Entrar</button>
+            <button id="btn-login" style="padding: 12px; background: #007aff; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);">Entrar</button>
         </div>
-        <p id="login-error" style="color: #ff3b30; display: none; margin-top: 5px; font-weight: bold;">Usuario o contraseña incorrectos</p>
+        <p id="login-error" style="color: #ff453a; display: none; margin-top: 5px; font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,0.3);">Usuario o contraseña incorrectos</p>
     </div>
 
     <!-- CONTENIDO PRINCIPAL DE LA APP -->
@@ -64,6 +65,10 @@
                 <label style="display:flex; flex-direction:column; gap:4px; font-weight:bold; font-size:14px; color:#555;">Detalles: <input type="text" id="edit-tipo" style="padding:8px; border:1px solid #ccc; border-radius:6px; font-weight:normal;"></label>
                 <label style="display:flex; flex-direction:column; gap:4px; font-weight:bold; font-size:14px; color:#555;">IMEI: <input type="text" id="edit-imei" style="padding:8px; border:1px solid #ccc; border-radius:6px; font-weight:normal;"></label>
                 <label style="display:flex; flex-direction:column; gap:4px; font-weight:bold; font-size:14px; color:#555;">Línea Tlf: <input type="text" id="edit-tlf" style="padding:8px; border:1px solid #ccc; border-radius:6px; font-weight:normal;"></label>
+                <!-- CAMPOS NUEVOS DE LA OCA EN EL MODAL -->
+                <label style="display:flex; flex-direction:column; gap:4px; font-weight:bold; font-size:14px; color:#555;">Última OCA: <input type="text" id="edit-ultima-oca" style="padding:8px; border:1px solid #ccc; border-radius:6px; font-weight:normal;"></label>
+                <label style="display:flex; flex-direction:column; gap:4px; font-weight:bold; font-size:14px; color:#555;">Próxima OCA: <input type="text" id="edit-proxima-oca" style="padding:8px; border:1px solid #ccc; border-radius:6px; font-weight:normal;"></label>
+                
                 <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
                     <button id="btn-cancel-edit" style="padding: 8px 14px; background:#e5e5ea; border:none; border-radius:6px; cursor:pointer; font-weight:bold; color:#333;">Cancelar</button>
                     <button id="btn-save-edit" style="padding: 8px 14px; background: #007aff; color: white; border:none; border-radius:6px; cursor:pointer; font-weight:bold;">Guardar</button>
