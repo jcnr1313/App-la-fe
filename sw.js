@@ -1,4 +1,4 @@
-const CACHE_NAME = 'lafe-asc-v1';
+const CACHE_NAME = 'lafe-asc-v2';
 const assets = ['./', './index.html', './style.css', './app.js', './manifest.json'];
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(CACHE_NAME).then(cache => cache.addAll(assets)));
