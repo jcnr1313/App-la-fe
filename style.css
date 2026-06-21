@@ -2,6 +2,8 @@
     --bg-color: #f2f4f7;
     --card-bg: #ffffff;
     --primary: #007aff;
+    --success: #34c759;
+    --danger: #ff3b30;
     --text-main: #1c1c1e;
     --text-muted: #8e8e93;
     --border-color: #e5e5ea;
@@ -17,122 +19,206 @@ body {
     color: var(--text-main);
     padding-bottom: 30px;
 }
+
+/* PANTALLA DE LOGIN */
+#login-screen {
+    position: fixed;
+    top:0; left:0; right:0; bottom:0;
+    background: linear-gradient(135deg, #1e3a8a, #0f172a);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 1000;
+}
+.login-card {
+    background: white;
+    width: 100%;
+    max-width: 340px;
+    padding: 30px 20px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    text-align: center;
+}
+.hospital-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-bottom: 20px;
+}
+.logo-cross {
+    width: 40px;
+    height: 40px;
+    background-color: #ef4444;
+    position: relative;
+    border-radius: 6px;
+    margin-bottom: 8px;
+}
+.logo-cross::before {
+    content: "";
+    position: absolute;
+    background: white;
+    width: 24px; height: 8px;
+    left: 8px; top: 16px;
+}
+.logo-cross::after {
+    content: "";
+    position: absolute;
+    background: white;
+    width: 8px; height: 24px;
+    left: 16px; top: 8px;
+}
+.hospital-logo h2 {
+    font-size: 18px;
+    color: #1e3a8a;
+    font-weight: 800;
+    letter-spacing: 1px;
+}
+.hospital-logo p {
+    font-size: 12px;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+.login-card h3 {
+    font-size: 16px;
+    margin-bottom: 20px;
+    color: #475569;
+}
+.login-card input {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    font-size: 16px;
+    outline: none;
+    background: #f8fafc;
+}
+.login-card button {
+    width: 100%;
+    padding: 12px;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 16px;
+    font-weight: 600;
+}
+.error-msg {
+    color: var(--danger);
+    font-size: 13px;
+    margin-bottom: 10px;
+    display: none;
+    font-weight: 500;
+}
+
+/* APP PRINCIPAL */
 header {
     background: linear-gradient(135deg, #1e3a8a, #007aff);
     color: white;
-    padding: 55px 20px 20px 20px;
+    padding: 50px 20px 20px 20px;
     position: sticky;
     top: 0;
     z-index: 100;
     box-shadow: 0 4px 12px rgba(0,0,0,0.1);
 }
-.header-content h1 {
-    font-size: 24px;
-    font-weight: 700;
-}
-.header-content p {
-    font-size: 14px;
-    opacity: 0.8;
+.header-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
     margin-bottom: 15px;
 }
-.search-container {
-    position: relative;
-    width: 100%;
+.header-content h1 { font-size: 24px; font-weight: 700; }
+.header-content p { font-size: 14px; opacity: 0.8; }
+.btn-logout {
+    background: rgba(255,255,255,0.2);
+    border: none; color: white;
+    padding: 8px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
 }
+.search-container { position: relative; width: 100%; }
 .search-container input {
-    width: 100%;
-    padding: 12px 12px 12px 42px;
-    border: none;
-    border-radius: 12px;
+    width: 100%; padding: 12px 12px 12px 42px;
+    border: none; border-radius: 12px;
     background-color: rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    color: white;
-    font-size: 16px;
-    outline: none;
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    color: white; font-size: 16px; outline: none;
 }
-.search-container input::placeholder {
-    color: rgba(255, 255, 255, 0.6);
-}
-.search-icon {
-    position: absolute;
-    left: 14px;
-    top: 50%;
-    transform: translateY(-50%);
-    width: 18px;
-    height: 18px;
-    color: rgba(255, 255, 255, 0.6);
-}
-main {
-    padding: 15px;
-}
-#stats {
-    font-size: 14px;
-    color: var(--text-muted);
-    margin-bottom: 12px;
-    font-weight: 500;
-}
-.grid-container {
-    display: flex;
-    flex-direction: column;
-    gap: 14px;
-}
+.search-container input::placeholder { color: rgba(255, 255, 255, 0.6); }
+.search-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: rgba(255, 255, 255, 0.6); }
+main { padding: 15px; }
+#stats { font-size: 14px; color: var(--text-muted); margin-bottom: 12px; font-weight: 500; }
+.grid-container { display: flex; flex-direction: column; gap: 14px; }
+
+/* TARJETAS */
 .card {
     background-color: var(--card-bg);
-    border-radius: 14px;
-    padding: 14px;
+    border-radius: 14px; padding: 14px;
     box-shadow: 0 2px 6px rgba(0,0,0,0.03);
     border: 1px solid var(--border-color);
 }
 .card-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--border-color);
-    padding-bottom: 8px;
-    margin-bottom: 10px;
+    display: flex; justify-content: space-between;
+    align-items: center; border-bottom: 1px solid var(--border-color);
+    padding-bottom: 8px; margin-bottom: 10px;
 }
-.card-title {
-    font-size: 17px;
-    font-weight: 700;
-    color: #1e3a8a;
+.header-left { display: flex; align-items: center; gap: 10px; }
+.card-title { font-size: 17px; font-weight: 700; color: #1e3a8a; }
+.btn-edit {
+    background: none; border: none;
+    color: var(--primary); padding: 4px;
+    display: flex; align-items: center;
 }
 .rae-badge {
-    background-color: #e0f2fe;
-    color: #0369a1;
-    padding: 4px 8px;
-    border-radius: 6px;
+    background-color: #e0f2fe; color: #0369a1;
+    padding: 4px 8px; border-radius: 6px;
+    font-size: 12px; font-weight: 600;
+}
+.card-body { display: flex; flex-direction: column; gap: 8px; }
+.info-row { display: flex; align-items: center; gap: 8px; font-size: 14px; min-height: 30px; }
+.info-row i { width: 16px; height: 16px; color: var(--text-muted); flex-shrink: 0; }
+.label { font-weight: 500; color: var(--text-muted); min-width: 75px; }
+.value { color: var(--text-main); flex-grow: 1; word-break: break-all; }
+
+/* BOTÓN DE LLAMAR VERDE */
+.phone-container {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-grow: 1;
+}
+.btn-call {
+    background-color: var(--success);
+    color: white;
+    text-decoration: none;
+    padding: 4px 10px;
+    border-radius: 8px;
     font-size: 12px;
     font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 4px rgba(52, 199, 89, 0.2);
 }
-.card-body {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+.btn-call i { color: white !important; width: 12px !important; height: 12px !important; }
+
+/* VENTANA MODAL (EDITAR) */
+.modal {
+    display: none; position: fixed;
+    top:0; left:0; right:0; bottom:0;
+    background: rgba(0,0,0,0.5); z-index: 200;
+    align-items: center; justify-content: center; padding: 15px;
 }
-.info-row {
-    display: flex;
-    align-items: flex-start;
-    gap: 8px;
-    font-size: 14px;
+.modal-content {
+    background: white; width: 100%;
+    max-width: 400px; padding: 20px;
+    border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
 }
-.info-row i {
-    width: 15px;
-    height: 15px;
-    color: var(--text-muted);
-    margin-top: 2px;
-}
-.label {
-    font-weight: 500;
-    color: var(--text-muted);
-    min-width: 70px;
-}
-.value {
-    color: var(--text-main);
-    word-break: break-all;
-}
-.value.phone {
-    color: var(--primary);
-    text-decoration: none;
-    font-weight: 600;
-}
+.modal-content h3 { margin-bottom: 15px; color: #1e3a8a; }
+.modal-inputs { display: flex; flex-direction: column; gap: 5px; margin-bottom: 15px; }
+.modal-inputs label { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-top: 5px; }
+.modal-inputs input { padding: 10px; border: 1px solid var(--border-color); border-radius: 8px; font-size: 15px; }
+.modal-actions { display: flex; gap: 10px; justify-content: flex-end; }
+.modal-actions button { padding: 10px 16px; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; }
+.btn-primary { background: var(--primary); color: white; }
+.btn-secondary { background: #e5e5ea; color: var(--text-main); }
