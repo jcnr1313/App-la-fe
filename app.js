@@ -82,6 +82,7 @@ const ascensoresIniciales = [
     { id: "83", uso: "ANIMALARIO", tipo: "Montacamillas 2-Par 1600Kg", rae: "46/67042", imei: "353656104782240", tlf: "5901000145103" }
 ];
 
+// Unificado el uso de 'lafe_asc_data' tanto para leer como para escribir
 let ascensoresData = JSON.parse(localStorage.getItem('lafe_asc_data')) || ascensoresIniciales;
 let currentEditId = null;
 
@@ -91,6 +92,7 @@ const loginError = document.getElementById('login-error');
 const container = document.getElementById('ascensores-container');
 const searchInput = document.getElementById('search-input');
 const stats = document.getElementById('stats');
+const modal = document.getElementById('edit-modal');
 
 // Gestión de Login
 document.getElementById('btn-login').addEventListener('click', ejecutarLogin);
@@ -117,10 +119,11 @@ document.getElementById('btn-logout').addEventListener('click', () => {
     loginError.style.display = 'none';
 });
 
-// Comprobar sesión al cargar
+// Comprobar sesión al cargar (Corregido: ahora renderiza los datos directamente al recordar sesión)
 if (localStorage.getItem('lafe_session') === 'active') {
     loginScreen.style.display = 'none';
     appContent.style.display = 'block';
+    renderAscensores(ascensoresData);
 }
 
 function renderAscensores(data) {
@@ -164,11 +167,12 @@ function renderAscensores(data) {
         `;
         container.appendChild(card);
     });
-    lucide.createIcons();
+    if (typeof lucide !== 'undefined') {
+        lucide.createIcons();
+    }
 }
 
 // Ventana Modal para Editar
-const modal = document.getElementById('edit-modal');
 window.abrirEditor = function(id) {
     currentEditId = id;
     const asc = ascensoresData.find(a => a.id === id);
@@ -192,12 +196,14 @@ document.getElementById('btn-save-edit').addEventListener('click', () => {
         ascensoresData[idx].imei = document.getElementById('edit-imei').value;
         ascensoresData[idx].tlf = document.getElementById('edit-tlf').value;
         
-        localStorage.setItem('lafe_data_custom', JSON.stringify(ascensoresData));
+        // Corregido: Guarda usando la misma clave que lee arriba ('lafe_asc_data')
+        localStorage.setItem('lafe_asc_data', JSON.stringify(ascensoresData));
         modal.style.display = 'none';
         renderAscensores(ascensoresData);
     }
 });
 
+// Buscador en tiempo real
 searchInput.addEventListener('input', (e) => {
     const term = e.target.value.toLowerCase().trim();
     const filtered = ascensoresData.filter(asc => 
@@ -211,4 +217,5 @@ searchInput.addEventListener('input', (e) => {
     renderAscensores(filtered);
 });
 
+// Render inicial preventivo por si no hay sesión activa previa
 renderAscensores(ascensoresData);
