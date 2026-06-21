@@ -11,7 +11,7 @@ const usuariosPermitidos = {
     "user": "admin"
 };
 
-// Base de datos inicial (Incluye el Ascensor 52 corregido y completo)
+// Base de datos inicial
 const ascensoresIniciales = [
     { id: "1", uso: "EDIF. INVESTIGACION", tipo: "Montacamillas 9-Par 1050Kg", rae: "46/63556", imei: "353656104783206", tlf: "5901005190178" },
     { id: "2", uso: "EDIF. INVESTIGACION", tipo: "Montacamillas 9-Par 1050Kg", rae: "46/63557", imei: "353656104782844", tlf: "5901000410273" },
@@ -223,7 +223,7 @@ if (document.getElementById('btn-save-edit')) {
     });
 }
 
-// Buscador seguro (Evita interrupciones en la pantalla de acceso)
+// Buscador seguro
 if (searchInput) {
     searchInput.addEventListener('input', (e) => {
         const term = e.target.value.toLowerCase().trim();
@@ -239,7 +239,7 @@ if (searchInput) {
     });
 }
 
-// CORRECCIÓN FINAL: Solo se procesan las tarjetas inicialmente si la sesión se encuentra validada
+// Solo se procesan las tarjetas inicialmente si la sesión se encuentra validada
 if (localStorage.getItem('lafe_session') === 'active') {
     renderAscensores(ascensoresData);
 }
