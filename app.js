@@ -1,8 +1,22 @@
-const ascensoresData = [
+// Forzar actualización de la caché limpiando versiones viejas del Service Worker
+if ('serviceWorker' in navigator) {
+    caches.keys().then(names => {
+        for (let name of names) caches.delete(name);
+    });
+}
+
+// Listado de usuarios autorizados
+const usuariosPermitidos = {
+    "juan carlos": "1313",
+    "user": "admin"
+};
+
+// Base de datos inicial (Incluye el Ascensor 52 corregido y completo)
+const ascensoresIniciales = [
     { id: "1", uso: "EDIF. INVESTIGACION", tipo: "Montacamillas 9-Par 1050Kg", rae: "46/63556", imei: "353656104783206", tlf: "5901005190178" },
     { id: "2", uso: "EDIF. INVESTIGACION", tipo: "Montacamillas 9-Par 1050Kg", rae: "46/63557", imei: "353656104782844", tlf: "5901000410273" },
     { id: "3", uso: "EDIF. INVESTIGACION", tipo: "Montacamillas 10-Par 1050Kg", rae: "46/63555", imei: "356874087109029", tlf: "5901005201551" },
-    { id: "4", uso: "EDIF. INVESTIGACION", tipo: "Montacamillas 10-Par 1050Kg", rae: "46/63554", imei: "353656105110011", tlf: "5901007486071" },
+    { id: "4", uso: "EDIF. INVESTIGACION", tipo: "Montacamillas 10-Par 1050Kg", rae: "46/63544", imei: "353656105110011", tlf: "5901007486071" },
     { id: "5", uso: "MORTUORIO", tipo: "Montacamillas 3-Par 1600Kg", rae: "46/62992", imei: "353656104822533", tlf: "5901000325911" },
     { id: "8", uso: "C. EXT. PACIENTES", tipo: "Montacamillas 8-Par 1050Kg", rae: "46/62995", imei: "353656101828483", tlf: "5901000532801" },
     { id: "9", uso: "C. EXT. PACIENTES", tipo: "Montacamillas 8-Par 1050Kg", rae: "46/62996", imei: "353656104783396", tlf: "5901008150449" },
@@ -43,6 +57,7 @@ const ascensoresData = [
     { id: "49", uso: "INGRESO PACIENTES", tipo: "Montacamillas 9-Par 1600Kg", rae: "46/63485", imei: "353656101645499", tlf: "5901000473535" },
     { id: "50", uso: "INGRESO PACIENTES / VISITAS", tipo: "Montacamillas 9-Par 1600Kg / 8-Par 1050Kg", rae: "46/63484", imei: "353656105121216 / 353656101861435", tlf: "5901000532826 / 5901000515390" },
     { id: "51", uso: "VISITAS", tipo: "Montacamillas 8-Par 1050Kg", rae: "46/63516", imei: "353656105098505", tlf: "5901000454753" },
+    { id: "52", uso: "VISITAS", tipo: "Montacamillas 8-Par 1050Kg", rae: "46/63515", imei: "Sin registrar", tlf: "Sin registrar" },
     { id: "55", uso: "MONTACARGAS/SUMINISTROS", tipo: "Montacamillas 9-Par 1600Kg", rae: "46/63559", imei: "353656101840231", tlf: "5901000467990" },
     { id: "56", uso: "MONTACARGAS/SUMINISTROS", tipo: "Montacamillas 9-Par 1600Kg", rae: "46/63560", imei: "353656105097382", tlf: "5901007206966" },
     { id: "57", uso: "MONTACARGAS/SUMINISTROS", tipo: "Montacamillas 9-Par 1600Kg", rae: "46/63561", imei: "353656101638379", tlf: "5901000443317" },
@@ -51,7 +66,7 @@ const ascensoresData = [
     { id: "60", uso: "PERSONAL Y PACIENTES", tipo: "Montacamillas 10-Par 1600Kg", rae: "46/63563", imei: "353656101606160", tlf: "5901009692755" },
     { id: "61", uso: "PERSONAL Y PACIENTES", tipo: "Montacamillas 10-Par 1600Kg", rae: "46/63513", imei: "353656101663666", tlf: "5901000582066" },
     { id: "62", uso: "INGRESO PACIENTES", tipo: "Montacamillas 9-Par 1600Kg", rae: "46/63470", imei: "353656101606178", tlf: "5901000479591" },
-    { id: "63", uso: "INGRESO PACIENTES", tipo: "Montacamillas 9-Par 1600Kg", rae: "46/63528", imei: "35713118142653", tlf: "5901000484238" },
+    { id: "63", uso: "INGRESO PACIENTES", tipo: "Montacamillas 9-Par 1600Kg", rae: "46/63528", imei: "353713118142653", tlf: "5901000484238" },
     { id: "64", uso: "VISITAS", tipo: "Montacamillas 8-Par 1050Kg", rae: "46/63518", imei: "353656104782380", tlf: "5901000571314" },
     { id: "65", uso: "VISITAS", tipo: "Montacamillas 8-Par 1050Kg", rae: "46/63517", imei: "353656104782372", tlf: "5901000407904" },
     { id: "68", uso: "EDIF. ADMNISTRACIÓN - DOCENCIA", tipo: "Asc Publico 2-Par 830Kg", rae: "46/63456", imei: "353656104780061", tlf: "5901000443189" },
@@ -66,9 +81,48 @@ const ascensoresData = [
     { id: "82", uso: "RADIOTERAPIA", tipo: "Montacamillas 2-Par 1600Kg", rae: "46/63010", imei: "353656104783065", tlf: "5901000463559" },
     { id: "83", uso: "ANIMALARIO", tipo: "Montacamillas 2-Par 1600Kg", rae: "46/67042", imei: "353656104782240", tlf: "5901000145103" }
 ];
+
+let ascensoresData = JSON.parse(localStorage.getItem('lafe_asc_data')) || ascensoresIniciales;
+let currentEditId = null;
+
+const loginScreen = document.getElementById('login-screen');
+const appContent = document.getElementById('app-content');
+const loginError = document.getElementById('login-error');
 const container = document.getElementById('ascensores-container');
 const searchInput = document.getElementById('search-input');
 const stats = document.getElementById('stats');
+
+// Gestión de Login
+document.getElementById('btn-login').addEventListener('click', ejecutarLogin);
+function ejecutarLogin() {
+    const userIn = document.getElementById('username').value.toLowerCase().trim();
+    const passIn = document.getElementById('password').value;
+
+    if (usuariosPermitidos[userIn] && usuariosPermitidos[userIn] === passIn) {
+        localStorage.setItem('lafe_session', 'active');
+        loginScreen.style.display = 'none';
+        appContent.style.display = 'block';
+        renderAscensores(ascensoresData);
+    } else {
+        loginError.style.display = 'block';
+    }
+}
+
+document.getElementById('btn-logout').addEventListener('click', () => {
+    localStorage.removeItem('lafe_session');
+    loginScreen.style.display = 'flex';
+    appContent.style.display = 'none';
+    document.getElementById('username').value = '';
+    document.getElementById('password').value = '';
+    loginError.style.display = 'none';
+});
+
+// Comprobar sesión al cargar
+if (localStorage.getItem('lafe_session') === 'active') {
+    loginScreen.style.display = 'none';
+    appContent.style.display = 'block';
+}
+
 function renderAscensores(data) {
     container.innerHTML = '';
     stats.textContent = `Mostrando ${data.length} de ${ascensoresData.length} ascensores`;
@@ -79,16 +133,32 @@ function renderAscensores(data) {
     data.forEach(asc => {
         const card = document.createElement('div');
         card.className = 'card';
+        
+        // Preparar botón verde de llamar si el teléfono es válido
+        let tlfHtml = `<span class="value">${asc.tlf}</span>`;
+        if (asc.tlf && asc.tlf !== "Sin registrar") {
+            const primerNumero = asc.tlf.split(' / ')[0].trim();
+            tlfHtml = `
+                <div class="phone-container">
+                    <span class="value">${asc.tlf}</span>
+                    <a href="tel:${primerNumero}" class="btn-call"><i data-lucide="phone"></i>Llamar</a>
+                </div>
+            `;
+        }
+
         card.innerHTML = `
             <div class="card-header">
-                <div class="card-title">Ascensor ${asc.id}</div>
+                <div class="header-left">
+                    <div class="card-title">Ascensor ${asc.id}</div>
+                    <button class="btn-edit" onclick="abrirEditor('${asc.id}')"><i data-lucide="edit-3"></i></button>
+                </div>
                 <div class="rae-badge">RAE ${asc.rae}</div>
             </div>
             <div class="card-body">
                 <div class="info-row"><i data-lucide="map-pin"></i><span class="label">Uso/Ubi:</span><span class="value">${asc.uso}</span></div>
                 <div class="info-row"><i data-lucide="info"></i><span class="label">Detalles:</span><span class="value">${asc.tipo}</span></div>
                 <div class="info-row"><i data-lucide="cpu"></i><span class="label">IMEI:</span><span class="value">${asc.imei}</span></div>
-                <div class="info-row"><i data-lucide="phone"></i><span class="label">Línea Tlf:</span><a href="tel:${asc.tlf.split(' / ')[0]}" class="value phone">${asc.tlf}</a></div>
+                <div class="info-row"><i data-lucide="phone"></i><span class="label">Línea Tlf:</span>${tlfHtml}</div>
                 <div class="info-row"><i data-lucide="lock"></i><span class="label">PIN SIM:</span><span class="value">1313</span></div>
             </div>
         `;
@@ -96,6 +166,38 @@ function renderAscensores(data) {
     });
     lucide.createIcons();
 }
+
+// Ventana Modal para Editar
+const modal = document.getElementById('edit-modal');
+window.abrirEditor = function(id) {
+    currentEditId = id;
+    const asc = ascensoresData.find(a => a.id === id);
+    if(asc) {
+        document.getElementById('modal-title').textContent = `Editar Ascensor ${id}`;
+        document.getElementById('edit-uso').value = asc.uso;
+        document.getElementById('edit-tipo').value = asc.tipo;
+        document.getElementById('edit-imei').value = asc.imei;
+        document.getElementById('edit-tlf').value = asc.tlf;
+        modal.style.display = 'flex';
+    }
+}
+
+document.getElementById('btn-cancel-edit').addEventListener('click', () => modal.style.display = 'none');
+
+document.getElementById('btn-save-edit').addEventListener('click', () => {
+    const idx = ascensoresData.findIndex(a => a.id === currentEditId);
+    if(idx !== -1) {
+        ascensoresData[idx].uso = document.getElementById('edit-uso').value;
+        ascensoresData[idx].tipo = document.getElementById('edit-tipo').value;
+        ascensoresData[idx].imei = document.getElementById('edit-imei').value;
+        ascensoresData[idx].tlf = document.getElementById('edit-tlf').value;
+        
+        localStorage.setItem('lafe_data_custom', JSON.stringify(ascensoresData));
+        modal.style.display = 'none';
+        renderAscensores(ascensoresData);
+    }
+});
+
 searchInput.addEventListener('input', (e) => {
     const term = e.target.value.toLowerCase().trim();
     const filtered = ascensoresData.filter(asc => 
@@ -108,9 +210,5 @@ searchInput.addEventListener('input', (e) => {
     );
     renderAscensores(filtered);
 });
+
 renderAscensores(ascensoresData);
-if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-        navigator.serviceWorker.register('./sw.js').catch(err => console.log(err));
-    });
-}
