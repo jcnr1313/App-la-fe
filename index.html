@@ -13,20 +13,52 @@
     <script src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body>
-    <header>
-        <div class="header-content">
-            <h1>Hospital La Fe</h1>
-            <p>Control de Líneas y RAEs</p>
+
+    <div id="login-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; gap: 15px; background-color: #f5f5f7;">
+        <h2 style="color: #1d1d1f; margin-bottom: 5px;">Iniciar Sesión</h2>
+        <div style="display: flex; flex-direction: column; gap: 10px; width: 280px;">
+            <input type="text" id="username" placeholder="Usuario" style="padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;">
+            <input type="password" id="password" placeholder="Contraseña" style="padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;">
+            <button id="btn-login" style="padding: 12px; background: #007aff; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px;">Entrar</button>
         </div>
-        <div class="search-container">
-            <i data-lucide="search" class="search-icon"></i>
-            <input type="text" id="search-input" placeholder="Buscar por ascensor, RAE, uso...">
+        <p id="login-error" style="color: #ff3b30; display: none; margin-top: 5px; font-weight: bold;">Usuario o contraseña incorrectos</p>
+    </div>
+
+    <div id="app-content" style="display: none;">
+        <header>
+            <div class="header-content" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px;">
+                <div>
+                    <h1>Hospital La Fe</h1>
+                    <p>Control de Líneas y RAEs</p>
+                </div>
+                <button id="btn-logout" style="padding: 8px 16px; background: #ff3b30; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Salir</button>
+            </div>
+            <div class="search-container">
+                <i data-lucide="search" class="search-icon"></i>
+                <input type="text" id="search-input" placeholder="Buscar por ascensor, RAE, uso...">
+            </div>
+        </header>
+        
+        <main>
+            <div id="stats">Cargando ascensores...</div>
+            <div id="ascensores-container" class="grid-container"></div>
+        </main>
+        
+        <div id="edit-modal" style="display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); justify-content:center; align-items:center; z-index: 1000; font-family: sans-serif;">
+            <div style="background: white; padding: 20px; border-radius: 12px; width: 300px; display: flex; flex-direction: column; gap: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+                <h3 id="modal-title" style="margin-top: 0; color: #1d1d1f;">Editar</h3>
+                <label style="display:flex; flex-direction:column; gap:4px; font-weight:bold; font-size:14px; color:#555;">Uso/Ubi: <input type="text" id="edit-uso" style="padding:8px; border:1px solid #ccc; border-radius:6px; font-weight:normal;"></label>
+                <label style="display:flex; flex-direction:column; gap:4px; font-weight:bold; font-size:14px; color:#555;">Detalles: <input type="text" id="edit-tipo" style="padding:8px; border:1px solid #ccc; border-radius:6px; font-weight:normal;"></label>
+                <label style="display:flex; flex-direction:column; gap:4px; font-weight:bold; font-size:14px; color:#555;">IMEI: <input type="text" id="edit-imei" style="padding:8px; border:1px solid #ccc; border-radius:6px; font-weight:normal;"></label>
+                <label style="display:flex; flex-direction:column; gap:4px; font-weight:bold; font-size:14px; color:#555;">Línea Tlf: <input type="text" id="edit-tlf" style="padding:8px; border:1px solid #ccc; border-radius:6px; font-weight:normal;"></label>
+                <div style="display: flex; justify-content: flex-end; gap: 10px; margin-top: 8px;">
+                    <button id="btn-cancel-edit" style="padding: 8px 14px; background:#e5e5ea; border:none; border-radius:6px; cursor:pointer; font-weight:bold; color:#333;">Cancelar</button>
+                    <button id="btn-save-edit" style="padding: 8px 14px; background: #007aff; color: white; border:none; border-radius:6px; cursor:pointer; font-weight:bold;">Guardar</button>
+                </div>
+            </div>
         </div>
-    </header>
-    <main>
-        <div id="stats">Cargando ascensores...</div>
-        <div id="ascensores-container" class="grid-container"></div>
-    </main>
+    </div>
+
     <script src="app.js"></script>
 </body>
 </html>
