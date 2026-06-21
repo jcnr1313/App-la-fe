@@ -1,4 +1,4 @@
-// Forzar actualización de la caché limpiando versiones viejas del Service Worker
+// Forzar actualización de la caché de Service Worker viejos
 if ('serviceWorker' in navigator) {
     caches.keys().then(names => {
         for (let name of names) caches.delete(name);
@@ -82,7 +82,7 @@ const ascensoresIniciales = [
     { id: "83", uso: "ANIMALARIO", tipo: "Montacamillas 2-Par 1600Kg", rae: "46/67042", imei: "353656104782240", tlf: "5901000145103" }
 ];
 
-// Sincronizadas las claves de almacenamiento en 'lafe_asc_data'
+// Unificado el Storage a la clave 'lafe_asc_data'
 let ascensoresData = JSON.parse(localStorage.getItem('lafe_asc_data')) || ascensoresIniciales;
 let currentEditId = null;
 
@@ -94,7 +94,7 @@ const searchInput = document.getElementById('search-input');
 const stats = document.getElementById('stats');
 const modal = document.getElementById('edit-modal');
 
-// Gestión de Login
+// Gestión de Inicio de Sesión
 if (document.getElementById('btn-login')) {
     document.getElementById('btn-login').addEventListener('click', ejecutarLogin);
 }
@@ -113,6 +113,7 @@ function ejecutarLogin() {
     }
 }
 
+// Gestión de Cierre de Sesión
 if (document.getElementById('btn-logout')) {
     document.getElementById('btn-logout').addEventListener('click', () => {
         localStorage.removeItem('lafe_session');
@@ -124,13 +125,16 @@ if (document.getElementById('btn-logout')) {
     });
 }
 
-// Comprobar sesión al cargar e iniciar el renderizado automáticamente
+// Comprobación de estado de sesión inicial
 if (localStorage.getItem('lafe_session') === 'active') {
     if (loginScreen) loginScreen.style.display = 'none';
     if (appContent) appContent.style.display = 'block';
-    renderAscensores(ascensoresData);
+} else {
+    if (loginScreen) loginScreen.style.display = 'flex';
+    if (appContent) appContent.style.display = 'none';
 }
 
+// Función encargada de estructurar las tarjetas
 function renderAscensores(data) {
     if (!container) return;
     container.innerHTML = '';
@@ -219,7 +223,7 @@ if (document.getElementById('btn-save-edit')) {
     });
 }
 
-// CORREGIDO: Buscador envuelto en control de seguridad para evitar que rompa JavaScript en el login
+// Buscador seguro (Evita interrupciones en la pantalla de acceso)
 if (searchInput) {
     searchInput.addEventListener('input', (e) => {
         const term = e.target.value.toLowerCase().trim();
@@ -235,5 +239,7 @@ if (searchInput) {
     });
 }
 
-// Render preventivo inicial por si el contenedor principal está activo de primeras
-renderAscensores(ascensoresData);
+// CORRECCIÓN FINAL: Solo se procesan las tarjetas inicialmente si la sesión se encuentra validada
+if (localStorage.getItem('lafe_session') === 'active') {
+    renderAscensores(ascensoresData);
+}
