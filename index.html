@@ -14,8 +14,10 @@
 </head>
 <body>
 
-    <div id="login-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; gap: 15px; background-color: #f5f5f7;">
-        <h2 style="color: #1d1d1f; margin-bottom: 5px;">Iniciar Sesión</h2>
+    <div id="login-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: sans-serif; gap: 15px; background-color: #f5f5f7; padding: 20px; box-sizing: border-box;">
+        <img src="https://gva-hospital-la-fe-vlc.imgix.net/images/hospital_la_fe.jpg" alt="Hospital La Fe" style="width: 100%; max-width: 280px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin-bottom: 5px;">
+        
+        <h2 style="color: #1d1d1f; margin: 0;">Iniciar Sesión</h2>
         <div style="display: flex; flex-direction: column; gap: 10px; width: 280px;">
             <input type="text" id="username" placeholder="Usuario" style="padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;">
             <input type="password" id="password" placeholder="Contraseña" style="padding: 12px; border-radius: 8px; border: 1px solid #ccc; font-size: 16px;">
@@ -26,13 +28,17 @@
 
     <div id="app-content" style="display: none;">
         <header>
-            <div class="header-content" style="display: flex; justify-content: space-between; align-items: center; padding: 10px 20px;">
-                <div>
-                    <h1>Hospital La Fe</h1>
-                    <p>Control de Líneas y RAEs</p>
+            <div style="display: flex; flex-direction: column; align-items: center; padding: 15px 20px 5px 20px; gap: 12px;">
+                <div style="display: flex; width: 100%; justify-content: space-between; align-items: center;">
+                    <img src="https://gva-hospital-la-fe-vlc.imgix.net/images/hospital_la_fe.jpg" alt="Logo La Fe" style="height: 45px; border-radius: 6px;">
+                    <button id="btn-logout" style="padding: 8px 16px; background: #ff3b30; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Salir</button>
                 </div>
-                <button id="btn-logout" style="padding: 8px 16px; background: #ff3b30; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">Salir</button>
+                <div style="text-align: center; width: 100%;">
+                    <h1 style="margin: 0; font-size: 24px;">Hospital La Fe</h1>
+                    <p style="margin: 2px 0 0 0; color: #8e8e93;">Control de Líneas y RAEs</p>
+                </div>
             </div>
+            
             <div class="search-container">
                 <i data-lucide="search" class="search-icon"></i>
                 <input type="text" id="search-input" placeholder="Buscar por ascensor, RAE, uso...">
