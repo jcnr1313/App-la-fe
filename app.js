@@ -82,7 +82,7 @@ const ascensoresIniciales = [
     { id: "83", uso: "ANIMALARIO", tipo: "Montacamillas 2-Par 1600Kg", rae: "46/67042", imei: "353656104782240", tlf: "5901000145103" }
 ];
 
-// Unificado el uso de 'lafe_asc_data' tanto para leer como para escribir
+// Sincronizadas las claves de almacenamiento en 'lafe_asc_data'
 let ascensoresData = JSON.parse(localStorage.getItem('lafe_asc_data')) || ascensoresIniciales;
 let currentEditId = null;
 
@@ -95,49 +95,59 @@ const stats = document.getElementById('stats');
 const modal = document.getElementById('edit-modal');
 
 // Gestión de Login
-document.getElementById('btn-login').addEventListener('click', ejecutarLogin);
+if (document.getElementById('btn-login')) {
+    document.getElementById('btn-login').addEventListener('click', ejecutarLogin);
+}
+
 function ejecutarLogin() {
     const userIn = document.getElementById('username').value.toLowerCase().trim();
     const passIn = document.getElementById('password').value;
 
     if (usuariosPermitidos[userIn] && usuariosPermitidos[userIn] === passIn) {
         localStorage.setItem('lafe_session', 'active');
-        loginScreen.style.display = 'none';
-        appContent.style.display = 'block';
+        if (loginScreen) loginScreen.style.display = 'none';
+        if (appContent) appContent.style.display = 'block';
         renderAscensores(ascensoresData);
     } else {
-        loginError.style.display = 'block';
+        if (loginError) loginError.style.display = 'block';
     }
 }
 
-document.getElementById('btn-logout').addEventListener('click', () => {
-    localStorage.removeItem('lafe_session');
-    loginScreen.style.display = 'flex';
-    appContent.style.display = 'none';
-    document.getElementById('username').value = '';
-    document.getElementById('password').value = '';
-    loginError.style.display = 'none';
-});
+if (document.getElementById('btn-logout')) {
+    document.getElementById('btn-logout').addEventListener('click', () => {
+        localStorage.removeItem('lafe_session');
+        if (loginScreen) loginScreen.style.display = 'flex';
+        if (appContent) appContent.style.display = 'none';
+        if (document.getElementById('username')) document.getElementById('username').value = '';
+        if (document.getElementById('password')) document.getElementById('password').value = '';
+        if (loginError) loginError.style.display = 'none';
+    });
+}
 
-// Comprobar sesión al cargar (Corregido: ahora renderiza los datos directamente al recordar sesión)
+// Comprobar sesión al cargar e iniciar el renderizado automáticamente
 if (localStorage.getItem('lafe_session') === 'active') {
-    loginScreen.style.display = 'none';
-    appContent.style.display = 'block';
+    if (loginScreen) loginScreen.style.display = 'none';
+    if (appContent) appContent.style.display = 'block';
     renderAscensores(ascensoresData);
 }
 
 function renderAscensores(data) {
+    if (!container) return;
     container.innerHTML = '';
-    stats.textContent = `Mostrando ${data.length} de ${ascensoresData.length} ascensores`;
+    
+    if (stats) {
+        stats.textContent = `Mostrando ${data.length} de ${ascensoresData.length} ascensores`;
+    }
+    
     if(data.length === 0) {
         container.innerHTML = '<p style="text-align:center; padding:20px; color:#8e8e93;">No se encontraron resultados.</p>';
         return;
     }
+    
     data.forEach(asc => {
         const card = document.createElement('div');
         card.className = 'card';
         
-        // Preparar botón verde de llamar si el teléfono es válido
         let tlfHtml = `<span class="value">${asc.tlf}</span>`;
         if (asc.tlf && asc.tlf !== "Sin registrar") {
             const primerNumero = asc.tlf.split(' / ')[0].trim();
@@ -167,6 +177,7 @@ function renderAscensores(data) {
         `;
         container.appendChild(card);
     });
+    
     if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
@@ -176,7 +187,7 @@ function renderAscensores(data) {
 window.abrirEditor = function(id) {
     currentEditId = id;
     const asc = ascensoresData.find(a => a.id === id);
-    if(asc) {
+    if(asc && modal) {
         document.getElementById('modal-title').textContent = `Editar Ascensor ${id}`;
         document.getElementById('edit-uso').value = asc.uso;
         document.getElementById('edit-tipo').value = asc.tipo;
@@ -186,36 +197,43 @@ window.abrirEditor = function(id) {
     }
 }
 
-document.getElementById('btn-cancel-edit').addEventListener('click', () => modal.style.display = 'none');
+if (document.getElementById('btn-cancel-edit')) {
+    document.getElementById('btn-cancel-edit').addEventListener('click', () => {
+        if (modal) modal.style.display = 'none';
+    });
+}
 
-document.getElementById('btn-save-edit').addEventListener('click', () => {
-    const idx = ascensoresData.findIndex(a => a.id === currentEditId);
-    if(idx !== -1) {
-        ascensoresData[idx].uso = document.getElementById('edit-uso').value;
-        ascensoresData[idx].tipo = document.getElementById('edit-tipo').value;
-        ascensoresData[idx].imei = document.getElementById('edit-imei').value;
-        ascensoresData[idx].tlf = document.getElementById('edit-tlf').value;
-        
-        // Corregido: Guarda usando la misma clave que lee arriba ('lafe_asc_data')
-        localStorage.setItem('lafe_asc_data', JSON.stringify(ascensoresData));
-        modal.style.display = 'none';
-        renderAscensores(ascensoresData);
-    }
-});
+if (document.getElementById('btn-save-edit')) {
+    document.getElementById('btn-save-edit').addEventListener('click', () => {
+        const idx = ascensoresData.findIndex(a => a.id === currentEditId);
+        if(idx !== -1) {
+            ascensoresData[idx].uso = document.getElementById('edit-uso').value;
+            ascensoresData[idx].tipo = document.getElementById('edit-tipo').value;
+            ascensoresData[idx].imei = document.getElementById('edit-imei').value;
+            ascensoresData[idx].tlf = document.getElementById('edit-tlf').value;
+            
+            localStorage.setItem('lafe_asc_data', JSON.stringify(ascensoresData));
+            if (modal) modal.style.display = 'none';
+            renderAscensores(ascensoresData);
+        }
+    });
+}
 
-// Buscador en tiempo real
-searchInput.addEventListener('input', (e) => {
-    const term = e.target.value.toLowerCase().trim();
-    const filtered = ascensoresData.filter(asc => 
-        asc.id.toLowerCase().includes(term) ||
-        asc.uso.toLowerCase().includes(term) ||
-        asc.tipo.toLowerCase().includes(term) ||
-        asc.rae.toLowerCase().includes(term) ||
-        asc.imei.toLowerCase().includes(term) ||
-        asc.tlf.toLowerCase().includes(term)
-    );
-    renderAscensores(filtered);
-});
+// CORREGIDO: Buscador envuelto en control de seguridad para evitar que rompa JavaScript en el login
+if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+        const term = e.target.value.toLowerCase().trim();
+        const filtered = ascensoresData.filter(asc => 
+            asc.id.toLowerCase().includes(term) ||
+            asc.uso.toLowerCase().includes(term) ||
+            asc.tipo.toLowerCase().includes(term) ||
+            asc.rae.toLowerCase().includes(term) ||
+            asc.imei.toLowerCase().includes(term) ||
+            asc.tlf.toLowerCase().includes(term)
+        );
+        renderAscensores(filtered);
+    });
+}
 
-// Render inicial preventivo por si no hay sesión activa previa
+// Render preventivo inicial por si el contenedor principal está activo de primeras
 renderAscensores(ascensoresData);
