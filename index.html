@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ascensores La Fe</title>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="La Fe Asc">
+    <link rel="apple-touch-icon" href="icono-192.png">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <h1>Hospital La Fe</h1>
+            <p>Control de Líneas y RAEs</p>
+        </div>
+        <div class="search-container">
+            <i data-lucide="search" class="search-icon"></i>
+            <input type="text" id="search-input" placeholder="Buscar por ascensor, RAE, uso...">
+        </div>
+    </header>
+    <main>
+        <div id="stats">Cargando ascensores...</div>
+        <div id="ascensores-container" class="grid-container"></div>
+    </main>
+    <script src="app.js"></script>
+</body>
+</html>
