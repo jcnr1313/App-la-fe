@@ -59,8 +59,14 @@
                     <p style="margin: 4px 0 0 0; color: #8e8e93; font-size: 15px; font-weight: 500;">Control de Líneas y RAEs</p>
                 </div>
             </div>
+
+            <!-- PANEL DE ADMINISTRACIÓN DE USUARIOS (Solo visible para admin) -->
+            <div id="admin-panel" style="display: none; padding: 15px 20px; background: #fbfbfd; border-top: 1px solid #e5e5ea; border-bottom: 1px solid #e5e5ea; font-family: sans-serif;">
+                <h3 style="margin: 0 0 10px 0; font-size: 16px; color: #1d1d1f; font-weight: 600;">Gestión de Usuarios (Admin)</h3>
+                <div id="users-list-container" style="display: flex; flex-direction: column; gap: 10px;"></div>
+            </div>
             
-            <div class="search-container" style="padding: 0 20px 15px 20px;">
+            <div class="search-container" style="padding: 15px 20px 15px 20px;">
                 <div style="position: relative; display: flex; align-items: center; width: 100%;">
                     <i data-lucide="search" class="search-icon" style="position: absolute; left: 12px; color: #8e8e93;"></i>
                     <input type="text" id="search-input" placeholder="Buscar por ascensor, RAE, uso..." style="width: 100%; padding: 12px 12px 12px 40px; border-radius: 10px; border: 1px solid #e5e5ea; background: #f2f2f7; font-size: 16px; outline: none;">
@@ -92,6 +98,205 @@
             </div>
         </div>
     </div>
+
+    <!-- SCRIPT DE CONTROL DEL LOGIN, ROLES, PRIVACIDAD DE PIN Y GESTIÓN DE USUARIOS -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // Inicialización del sistema de credenciales en LocalStorage si no existen
+            if (!localStorage.getItem("app_users")) {
+                const defaultUsers = {
+                    "admin": { password: "admin", role: "admin" },
+                    "la fe": { password: "ingeniería", role: "viewer" }
+                };
+                localStorage.setItem("app_users", JSON.stringify(defaultUsers));
+            }
+
+            let currentUserRole = "viewer";
+
+            const loginScreen = document.getElementById("login-screen");
+            const appContent = document.getElementById("app-content");
+            const usernameInput = document.getElementById("username");
+            const passwordInput = document.getElementById("password");
+            const loginBtn = document.getElementById("btn-login");
+            const loginError = document.getElementById("login-error");
+            const logoutBtn = document.getElementById("btn-logout");
+            const adminPanel = document.getElementById("admin-panel");
+            const usersContainer = document.getElementById("users-list-container");
+
+            // Función para renderizar el panel de control de usuarios para el Admin
+            function renderAdminPanel() {
+                usersContainer.innerHTML = "";
+                const users = JSON.parse(localStorage.getItem("app_users"));
+                
+                Object.keys(users).forEach(username => {
+                    const userDiv = document.createElement("div");
+                    userDiv.style.cssText = "display: flex; flex-wrap: wrap; gap: 8px; align-items: center; background: white; padding: 10px; border-radius: 8px; border: 1px solid #e5e5ea; font-size: 14px;";
+                    
+                    userDiv.innerHTML = `
+                        <span style="font-weight: bold; min-width: 60px;">User:</span>
+                        <input type="text" value="${username}" data-old-user="${username}" class="admin-edit-user" style="padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; max-width: 90px;">
+                        <span style="font-weight: bold;">Pass:</span>
+                        <input type="text" value="${users[username].password}" class="admin-edit-pass" style="padding: 4px 8px; border: 1px solid #ccc; border-radius: 4px; font-size: 13px; max-width: 90px;">
+                        <button class="btn-update-user" style="padding: 4px 10px; background: #007aff; color: white; border: none; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; margin-left: auto;">Actualizar</button>
+                    `;
+
+                    userDiv.querySelector(".btn-update-user").addEventListener("click", function() {
+                        const oldUser = userDiv.querySelector(".admin-edit-user").getAttribute("data-old-user");
+                        const newUser = userDiv.querySelector(".admin-edit-user").value.trim().toLowerCase();
+                        const newPass = userDiv.querySelector(".admin-edit-pass").value.trim();
+
+                        if (!newUser || !newPass) {
+                            alert("El usuario y la contraseña no pueden estar vacíos.");
+                            return;
+                        }
+
+                        const currentUsers = JSON.parse(localStorage.getItem("app_users"));
+                        const role = currentUsers[oldUser].role;
+
+                        if (oldUser !== newUser) {
+                            delete currentUsers[oldUser];
+                        }
+                        currentUsers[newUser] = { password: newPass, role: role };
+
+                        localStorage.setItem("app_users", JSON.stringify(currentUsers));
+                        alert("Credenciales actualizadas correctamente.");
+                        renderAdminPanel();
+                    });
+
+                    usersContainer.appendChild(userDiv);
+                });
+            }
+
+            // Transforma las líneas de texto que contengan "PIN" agregando el ojo de visualización
+            function processPinElements() {
+                // Buscamos todas las etiquetas, párrafos o divs pequeños dentro de las tarjetas que tengan texto sobre el PIN
+                const elements = document.querySelectorAll("#ascensores-container p, #ascensores-container div, #ascensores-container span");
+                
+                elements.forEach(el => {
+                    // Si el elemento contiene la palabra "PIN" y no ha sido procesado todavía
+                    if (el.textContent.includes("PIN:") && !el.hasAttribute("data-pin-processed")) {
+                        el.setAttribute("data-pin-processed", "true");
+                        
+                        // Extraemos el texto original (Ej: "PIN: 1234" o "PIN de línea: 4321")
+                        const originalText = el.textContent;
+                        const pinMatch = originalText.match(/(PIN.*?:\s*)(.*)/i);
+                        
+                        if (pinMatch) {
+                            const labelText = pinMatch[1]; // Parte de "PIN:"
+                            const pinValue = pinMatch[2].trim(); // El código numérico real
+                            
+                            // Creamos una estructura HTML interactiva reemplazando el texto plano
+                            el.innerHTML = `
+                                <span>${labelText}</span>
+                                <span class="pin-secret-value" data-real-value="${pinValue}" style="font-family: monospace; font-weight: bold;">••••</span>
+                                <button class="btn-toggle-pin" style="background: none; border: none; padding: 0 4px; cursor: pointer; display: inline-flex; align-items: center; vertical-align: middle; color: #007aff; margin-left: 6px;" title="Ver PIN">
+                                    <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
+                                </button>
+                            `;
+                            
+                            // Añadimos la lógica del click para cambiar entre ojo abierto/cerrado y mostrar/ocultar el PIN
+                            const toggleBtn = el.querySelector(".btn-toggle-pin");
+                            const secretSpan = el.querySelector(".pin-secret-value");
+                            
+                            toggleBtn.addEventListener("click", function(e) {
+                                e.preventDefault();
+                                e.stopPropagation(); // Evita clics no deseados en la tarjeta
+                                
+                                const isHidden = secretSpan.textContent === "••••";
+                                if (isHidden) {
+                                    secretSpan.textContent = secretSpan.getAttribute("data-real-value");
+                                    toggleBtn.innerHTML = `<i data-lucide="eye-off" style="width: 16px; height: 16px;"></i>`;
+                                } else {
+                                    secretSpan.textContent = "••••";
+                                    toggleBtn.innerHTML = `<i data-lucide="eye" style="width: 16px; height: 16px;"></i>`;
+                                }
+                                // Forzamos el re-renderizado de los iconos de Lucide cargados arriba
+                                if (window.lucide) window.lucide.createIcons();
+                            });
+                        }
+                    }
+                });
+                
+                // Inicializa los iconos de Lucide recién inyectados
+                if (window.lucide) window.lucide.createIcons();
+            }
+
+            // Inyección de permisos de Roles y restricciones visuales
+            function applyRolePermissions(role) {
+                let styleTag = document.getElementById("role-restriction-styles");
+                if (!styleTag) {
+                    styleTag = document.createElement("style");
+                    styleTag.id = "role-restriction-styles";
+                    document.head.appendChild(styleTag);
+                }
+
+                if (role === "viewer") {
+                    styleTag.innerHTML = `
+                        button[id*='edit'], .btn-edit, .editar-btn, [class*='editar'] { display: none !important; }
+                    `;
+                    adminPanel.style.display = "none";
+                    
+                    // Bloqueo estricto del modal para el usuario viewer
+                    const modal = document.getElementById("edit-modal");
+                    if (modal) {
+                        const observer = new MutationObserver(() => {
+                            if (modal.style.display !== "none") modal.style.display = "none";
+                        });
+                        observer.observe(modal, { attributes: true, attributeFilter: ['style'] });
+                    }
+                    
+                    // Procesar la ocultación de los campos PIN
+                    processPinElements();
+                } else if (role === "admin") {
+                    styleTag.innerHTML = "";
+                    adminPanel.style.display = "block";
+                    renderAdminPanel();
+                    
+                    // El admin puede ver los PINs por defecto, pero si quieres conservar la estética del ojo también para él, descomenta la línea de abajo:
+                    processPinElements();
+                }
+            }
+
+            // Manejador del Login
+            loginBtn.addEventListener("click", function() {
+                const userVal = usernameInput.value.trim().toLowerCase();
+                const passVal = passwordInput.value;
+                const users = JSON.parse(localStorage.getItem("app_users"));
+
+                if (users[userVal] && users[userVal].password === passVal) {
+                    currentUserRole = users[userVal].role;
+                    loginScreen.style.display = "none";
+                    appContent.style.display = "block";
+                    loginError.style.display = "none";
+                    
+                    applyRolePermissions(currentUserRole);
+                } else {
+                    loginError.style.display = "block";
+                }
+            });
+
+            passwordInput.addEventListener("keypress", function(e) {
+                if (e.key === "Enter") loginBtn.click();
+            });
+
+            logoutBtn.addEventListener("click", function() {
+                usernameInput.value = "";
+                passwordInput.value = "";
+                appContent.style.display = "none";
+                loginScreen.style.display = "flex";
+            });
+
+            // Observer para capturar el momento exacto en el que app.js pinta los ascensores en el contenedor
+            const containerObserver = new MutationObserver(() => {
+                applyRolePermissions(currentUserRole);
+            });
+            
+            const container = document.getElementById("ascensores-container");
+            if (container) {
+                containerObserver.observe(container, { childList: true, subtree: true });
+            }
+        });
+    </script>
 
     <script src="app.js"></script>
 </body>
