@@ -26,10 +26,10 @@ const ascensoresIniciales = [
     { id: "19", uso: "URG. - Q. - UCI", tipo: "Montacamillas 3-Par 1600Kg", rae: "46/63006", imei: "353656105365243", tlf: "5901007061480", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" },
     { id: "20", uso: "URG. - Q. - UCI", tipo: "Montacamillas 3-Par 1600Kg", rae: "46/63007", imei: "353656105086575", tlf: "5901000468360", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" },
     { id: "22", uso: "PERSONAL Y PACIENTES", tipo: "Montacamillas 10-Par 1600Kg", rae: "46/63481", imei: "353656104782307", tlf: "5901000768740", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" },
-    { id: "23", uso: "PERSONALY PACIENTES", tipo: "Montacamillas 10-Par 1600Kg", rae: "46/63480", imei: "353656104782406", tlf: "5901000477454", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" },
+    { id: "23", uso: "PERSONAL Y PACIENTES", tipo: "Montacamillas 10-Par 1600Kg", rae: "46/63480", imei: "353656104782406", tlf: "5901000477454", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" },
     { id: "24", uso: "PERSONAL Y PACIENTES", tipo: "Montacamillas 10-Par 1600Kg", rae: "46/63482", imei: "353656104783321", tlf: "5901000407930", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" },
     { id: "25", uso: "INGRESO PACIENTES", tipo: "Montacamillas 9-Par 1600Kg", rae: "46/63523", imei: "353656105097903", tlf: "5901005202191", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" },
-    { id: "26", uso: "INGRESO PACIENTES", tipo: "Montacamillas 9-Par 1600Kg", rae: "46/63524", imei: "353656101868471", tlf: "5901000477464", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" },
+    { id: "26", uso: "INGRESO PACIENTES", tipo: "Montacamillas 9-Par 1600Kg", rae: "46/63477", imei: "353656105125498", tlf: "5901000468159", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" },
     { id: "27", uso: "VISITAS", tipo: "Montacamillas 8-Par 1050Kg", rae: "46/63576", imei: "353656105075966", tlf: "5901009414344", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" },
     { id: "28", uso: "VISITAS", tipo: "Montacamillas 8-Par 1050Kg", rae: "46/63577", imei: "353656105082228", tlf: "5901009214352", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" },
     { id: "31", uso: "MONTACARGAS/SUMINISTROS", tipo: "Montacamillas 9-Par 1600Kg", rae: "46/63520", imei: "356945322615069", tlf: "5901000096099", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" },
@@ -97,6 +97,21 @@ const searchInput = document.getElementById('search-input');
 const stats = document.getElementById('stats');
 const modal = document.getElementById('edit-modal');
 
+// Función interactiva para ocultar/mostrar PIN de forma independiente
+window.togglePinVisibility = function(button, pinRealValue) {
+    const secretSpan = button.previousElementSibling;
+    if (secretSpan && secretSpan.classList.contains('pin-secret-value')) {
+        if (secretSpan.textContent === "••••") {
+            secretSpan.textContent = pinRealValue;
+            button.innerHTML = `<i data-lucide="eye-off" style="width: 16px; height: 16px;"></i>`;
+        } else {
+            secretSpan.textContent = "••••";
+            button.innerHTML = `<i data-lucide="eye" style="width: 16px; height: 16px;"></i>`;
+        }
+        if (window.lucide) window.lucide.createIcons();
+    }
+};
+
 function renderAscensores(data) {
     if (!container) return;
     container.innerHTML = '';
@@ -125,6 +140,9 @@ function renderAscensores(data) {
             `;
         }
 
+        // El PIN se inserta por defecto siempre protegido y con el botón del ojo listo para actuar
+        const pinDefecto = "1313";
+
         card.innerHTML = `
             <div class="card-header">
                 <div class="header-left">
@@ -138,7 +156,14 @@ function renderAscensores(data) {
                 <div class="info-row"><i data-lucide="info"></i><span class="label">Detalles:</span><span class="value">${asc.tipo}</span></div>
                 <div class="info-row"><i data-lucide="cpu"></i><span class="label">IMEI:</span><span class="value">${asc.imei}</span></div>
                 <div class="info-row"><i data-lucide="phone"></i><span class="label">Línea Tlf:</span>${tlfHtml}</div>
-                <div class="info-row"><i data-lucide="lock"></i><span class="label">PIN SIM:</span><span class="value">1313</span></div>
+                <div class="info-row">
+                    <i data-lucide="lock"></i>
+                    <span class="label">PIN SIM:</span>
+                    <span class="pin-secret-value" style="font-family: monospace; font-weight: bold; margin-right: 2px;">••••</span>
+                    <button onclick="togglePinVisibility(this, '${pinDefecto}')" style="background: none; border: none; padding: 0 4px; cursor: pointer; display: inline-flex; align-items: center; vertical-align: middle; color: #007aff;" title="Ver PIN">
+                        <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
+                    </button>
+                </div>
                 <div class="info-row" style="border-top: 1px dashed #e5e5ea; margin-top: 8px; padding-top: 8px;"><i data-lucide="calendar-check"></i><span class="label">Última OCA:</span><span class="value" style="color: #24b24b; font-weight: 500;">${asc.ultimaOca}</span></div>
                 <div class="info-row"><i data-lucide="calendar-days"></i><span class="label">Próxima OCA:</span><span class="value" style="color: #ff9500; font-weight: 500;">${asc.proximaOca}</span></div>
             </div>
@@ -146,13 +171,19 @@ function renderAscensores(data) {
         container.appendChild(card);
     });
     
-    // Llamada directa y veloz a los permisos sin sobrecargar el procesador
     if (typeof window.applyRolePermissions === 'function') {
         window.applyRolePermissions(window.currentUserRole || localStorage.getItem("lafe_current_role") || "viewer");
-    } else if (typeof lucide !== 'undefined') {
+    }
+    
+    if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
 }
+
+// Función global accesible para refrescar la app tras el Login
+window.forzarRenderizadoCompleto = function() {
+    renderAscensores(ascensoresData);
+};
 
 window.abrirEditor = function(id) {
     currentEditId = id;
