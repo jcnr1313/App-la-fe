@@ -26,7 +26,7 @@ const ascensoresIniciales = [
     { id: "19", uso: "URG. - Q. - UCI", tipo: "Montacamillas 3-Par 1600Kg", rae: "46/63006", imei: "353656105365243", tlf: "5901007061480", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" },
     { id: "20", uso: "URG. - Q. - UCI", tipo: "Montacamillas 3-Par 1600Kg", rae: "46/63007", imei: "353656105086575", tlf: "5901000468360", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" },
     { id: "22", uso: "PERSONAL Y PACIENTES", tipo: "Montacamillas 10-Par 1600Kg", rae: "46/63481", imei: "353656104782307", tlf: "5901000768740", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" },
-    { id: "23", uso: "PERSONAL Y PACIENTES", tipo: "Montacamillas 10-Par 1600Kg", rae: "46/63480", imei: "353656104782406", tlf: "5901000477454", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" },
+    { id: "23", uso: "PERSONALY PACIENTES", tipo: "Montacamillas 10-Par 1600Kg", rae: "46/63480", imei: "353656104782406", tlf: "5901000477454", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" },
     { id: "24", uso: "PERSONAL Y PACIENTES", tipo: "Montacamillas 10-Par 1600Kg", rae: "46/63482", imei: "353656104783321", tlf: "5901000407930", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" },
     { id: "25", uso: "INGRESO PACIENTES", tipo: "Montacamillas 9-Par 1600Kg", rae: "46/63523", imei: "353656105097903", tlf: "5901005202191", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" },
     { id: "26", uso: "INGRESO PACIENTES", tipo: "Montacamillas 9-Par 1600Kg", rae: "46/63524", imei: "353656101868471", tlf: "5901000477464", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" },
@@ -76,7 +76,6 @@ const ascensoresIniciales = [
     { id: "83", uso: "ANIMALARIO", tipo: "Montacamillas 2-Par 1600Kg", rae: "46/67042", imei: "353656104782240", tlf: "5901000145103", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" }
 ];
 
-// Migración/Actualización automática en LocalStorage
 let ascensoresData = JSON.parse(localStorage.getItem('lafe_asc_data')) || ascensoresIniciales;
 let requiereGuardar = false;
 ascensoresData = ascensoresData.map(asc => {
@@ -98,7 +97,6 @@ const searchInput = document.getElementById('search-input');
 const stats = document.getElementById('stats');
 const modal = document.getElementById('edit-modal');
 
-// Función encargada de estructurar las tarjetas
 function renderAscensores(data) {
     if (!container) return;
     container.innerHTML = '';
@@ -148,12 +146,14 @@ function renderAscensores(data) {
         container.appendChild(card);
     });
     
-    if (typeof lucide !== 'undefined') {
+    // Llamada directa y veloz a los permisos sin sobrecargar el procesador
+    if (typeof window.applyRolePermissions === 'function') {
+        window.applyRolePermissions(window.currentUserRole || localStorage.getItem("lafe_current_role") || "viewer");
+    } else if (typeof lucide !== 'undefined') {
         lucide.createIcons();
     }
 }
 
-// Ventana Modal para Editar
 window.abrirEditor = function(id) {
     currentEditId = id;
     const asc = ascensoresData.find(a => a.id === id);
@@ -193,7 +193,6 @@ if (document.getElementById('btn-save-edit')) {
     });
 }
 
-// Buscador seguro
 if (searchInput) {
     searchInput.addEventListener('input', (e) => {
         const term = e.target.value.toLowerCase().trim();
@@ -209,5 +208,5 @@ if (searchInput) {
     });
 }
 
-// CORRECCIÓN CLAVE: Dibujar siempre las tarjetas de fondo inmediatamente.
+// Renderizado directo inicial
 renderAscensores(ascensoresData);
