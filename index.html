@@ -19,9 +19,7 @@
     <div id="login-screen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; gap: 20px; background: linear-gradient(135deg, #0056b3 0%, #002d62 100%); padding: 20px; box-sizing: border-box; z-index: 99999; transition: opacity 0.3s ease, visibility 0.3s ease;">
         
         <div style="display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 340px; text-align: center;">
-            <!-- LOGO EN EL LOGIN -->
             <img src="IMG_5462.jpeg" alt="Hospital La Fe" style="width: 100%; max-width: 340px; height: auto; border-radius: 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.3); margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.1);">
-            
             <h2 style="color: #ffffff; margin: 0 0 15px 0; font-size: 24px; font-weight: 600; letter-spacing: -0.5px; text-shadow: 0 2px 4px rgba(0,0,0,0.15);">Iniciar Sesión</h2>
             
             <div style="display: flex; flex-direction: column; gap: 12px; width: 100%;">
@@ -29,7 +27,6 @@
                 <input type="password" id="password" placeholder="Contraseña" style="padding: 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.2); font-size: 16px; background-color: rgba(255,255,255,0.95); box-shadow: inset 0 1px 3px rgba(0,0,0,0.05); outline: none; box-sizing: border-box;">
                 <button id="btn-login" style="padding: 14px; background: #007aff; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.25); transition: background 0.2s; margin-top: 5px;">Entrar</button>
             </div>
-            
             <p id="login-error" style="color: #ff453a; display: none; margin-top: 15px; font-weight: bold; text-shadow: 0 1px 2px rgba(0,0,0,0.3); font-size: 14px;">Usuario o contraseña incorrectos</p>
         </div>
     </div>
@@ -38,7 +35,6 @@
     <div id="app-content" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
         <header style="background: #ffffff; box-shadow: 0 1px 10px rgba(0,0,0,0.05); margin-bottom: 10px;">
             <div style="display: flex; flex-direction: column; align-items: center; padding: 20px 20px 15px 20px; gap: 15px; position: relative;">
-                
                 <button id="btn-logout" style="position: absolute; top: 20px; right: 20px; padding: 8px 14px; background: #ff3b30; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 13px; box-shadow: 0 2px 6px rgba(255,59,48,0.2); z-index: 10;">Salir</button>
                 
                 <div style="width: 100%; display: flex; justify-content: center; margin-top: 10px;">
@@ -146,48 +142,6 @@
             });
         }
 
-        // Se ejecuta de manera ultra rápida tras pintar las tarjetas
-        function processPinElements() {
-            const elements = document.querySelectorAll("#ascensores-container p, #ascensores-container div, #ascensores-container span");
-            elements.forEach(el => {
-                if (el.textContent.includes("PIN:") && !el.hasAttribute("data-pin-processed")) {
-                    el.setAttribute("data-pin-processed", "true");
-                    const originalText = el.textContent;
-                    const pinMatch = originalText.match(/(PIN.*?:\s*)(.*)/i);
-                    
-                    if (pinMatch) {
-                        const labelText = pinMatch[1];
-                        const pinValue = pinMatch[2].trim();
-                        
-                        el.innerHTML = `
-                            <span>${labelText}</span>
-                            <span class="pin-secret-value" data-real-value="${pinValue}" style="font-family: monospace; font-weight: bold;">••••</span>
-                            <button class="btn-toggle-pin" style="background: none; border: none; padding: 0 4px; cursor: pointer; display: inline-flex; align-items: center; vertical-align: middle; color: #007aff; margin-left: 6px;" title="Ver PIN">
-                                <i data-lucide="eye" style="width: 16px; height: 16px;"></i>
-                            </button>
-                        `;
-                        
-                        const toggleBtn = el.querySelector(".btn-toggle-pin");
-                        const secretSpan = el.querySelector(".pin-secret-value");
-                        
-                        toggleBtn.addEventListener("click", function(e) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            if (secretSpan.textContent === "••••") {
-                                secretSpan.textContent = secretSpan.getAttribute("data-real-value");
-                                toggleBtn.innerHTML = `<i data-lucide="eye-off" style="width: 16px; height: 16px;"></i>`;
-                            } else {
-                                secretSpan.textContent = "••••";
-                                toggleBtn.innerHTML = `<i data-lucide="eye" style="width: 16px; height: 16px;"></i>`;
-                            }
-                            if (window.lucide) window.lucide.createIcons();
-                        });
-                    }
-                }
-            });
-            if (window.lucide) window.lucide.createIcons();
-        }
-
         function applyRolePermissions(role) {
             let styleTag = document.getElementById("role-restriction-styles");
             if (!styleTag) {
@@ -208,7 +162,6 @@
                 if (adminPanel) adminPanel.style.display = "block";
                 renderAdminPanel();
             }
-            processPinElements();
         }
 
         window.addEventListener("DOMContentLoaded", function() {
@@ -241,6 +194,10 @@
                         if (loginError) loginError.style.display = "none";
                         
                         applyRolePermissions(currentUserRole);
+                        // Forzar el re-renderizado para aplicar correctamente los estados visuales iniciales
+                        if (typeof window.forzarRenderizadoCompleto === 'function') {
+                            window.forzarRenderizadoCompleto();
+                        }
                     } else {
                         if (loginError) loginError.style.display = "block";
                     }
