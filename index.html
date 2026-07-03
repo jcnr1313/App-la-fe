@@ -89,7 +89,7 @@
         </div>
     </div>
 
-    <!-- SCRIPT DE CONTROL DE ACCESO Y LOGGIN INTERNO -->
+    <!-- SCRIPT DE CONTROL DE ACCESO INTERNO -->
     <script>
         if (!localStorage.getItem("app_users")) {
             const defaultUsers = {
@@ -146,6 +146,7 @@
             });
         }
 
+        // Se ejecuta de manera ultra rápida tras pintar las tarjetas
         function processPinElements() {
             const elements = document.querySelectorAll("#ascensores-container p, #ascensores-container div, #ascensores-container span");
             elements.forEach(el => {
@@ -264,14 +265,6 @@
                     loginScreen.style.opacity = "1";
                     applyRolePermissions("viewer");
                 });
-            }
-
-            const container = document.getElementById("ascensores-container");
-            if (container) {
-                const containerObserver = new MutationObserver(() => {
-                    applyRolePermissions(currentUserRole);
-                });
-                containerObserver.observe(container, { childList: true, subtree: true });
             }
         });
     </script>
