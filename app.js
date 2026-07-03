@@ -5,12 +5,6 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-// Listado de usuarios autorizados
-const usuariosPermitidos = {
-    "juan carlos": "1313",
-    "user": "admin"
-};
-
 // Base de datos inicial con los campos de OCA agregados por defecto
 const ascensoresIniciales = [
     { id: "1", uso: "EDIF. INVESTIGACION", tipo: "Montacamillas 9-Par 1050Kg", rae: "46/63556", imei: "353656104783206", tlf: "5901005190178", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" },
@@ -82,7 +76,7 @@ const ascensoresIniciales = [
     { id: "83", uso: "ANIMALARIO", tipo: "Montacamillas 2-Par 1600Kg", rae: "46/67042", imei: "353656104782240", tlf: "5901000145103", ultimaOca: "Octubre 2025", proximaOca: "Octubre 2027" }
 ];
 
-// Migración/Actualización automática si ya tenían datos guardados en LocalStorage sin las OCAs
+// Migración/Actualización automática en LocalStorage
 let ascensoresData = JSON.parse(localStorage.getItem('lafe_asc_data')) || ascensoresIniciales;
 let requiereGuardar = false;
 ascensoresData = ascensoresData.map(asc => {
@@ -99,53 +93,10 @@ if (requiereGuardar) {
 
 let currentEditId = null;
 
-const loginScreen = document.getElementById('login-screen');
-const appContent = document.getElementById('app-content');
-const loginError = document.getElementById('login-error');
 const container = document.getElementById('ascensores-container');
 const searchInput = document.getElementById('search-input');
 const stats = document.getElementById('stats');
 const modal = document.getElementById('edit-modal');
-
-// Gestión de Inicio de Sesión
-if (document.getElementById('btn-login')) {
-    document.getElementById('btn-login').addEventListener('click', ejecutarLogin);
-}
-
-function ejecutarLogin() {
-    const userIn = document.getElementById('username').value.toLowerCase().trim();
-    const passIn = document.getElementById('password').value;
-
-    if (usuariosPermitidos[userIn] && usuariosPermitidos[userIn] === passIn) {
-        localStorage.setItem('lafe_session', 'active');
-        if (loginScreen) loginScreen.style.display = 'none';
-        if (appContent) appContent.style.display = 'block';
-        renderAscensores(ascensoresData);
-    } else {
-        if (loginError) loginError.style.display = 'block';
-    }
-}
-
-// Gestión de Cierre de Sesión
-if (document.getElementById('btn-logout')) {
-    document.getElementById('btn-logout').addEventListener('click', () => {
-        localStorage.removeItem('lafe_session');
-        if (loginScreen) loginScreen.style.display = 'flex';
-        if (appContent) appContent.style.display = 'none';
-        if (document.getElementById('username')) document.getElementById('username').value = '';
-        if (document.getElementById('password')) document.getElementById('password').value = '';
-        if (loginError) loginError.style.display = 'none';
-    });
-}
-
-// Comprobación de estado de sesión inicial
-if (localStorage.getItem('lafe_session') === 'active') {
-    if (loginScreen) loginScreen.style.display = 'none';
-    if (appContent) appContent.style.display = 'block';
-} else {
-    if (loginScreen) loginScreen.style.display = 'flex';
-    if (appContent) appContent.style.display = 'none';
-}
 
 // Función encargada de estructurar las tarjetas
 function renderAscensores(data) {
@@ -190,7 +141,6 @@ function renderAscensores(data) {
                 <div class="info-row"><i data-lucide="cpu"></i><span class="label">IMEI:</span><span class="value">${asc.imei}</span></div>
                 <div class="info-row"><i data-lucide="phone"></i><span class="label">Línea Tlf:</span>${tlfHtml}</div>
                 <div class="info-row"><i data-lucide="lock"></i><span class="label">PIN SIM:</span><span class="value">1313</span></div>
-                <!-- NUEVOS CAMPOS AGREGADOS VISUALMENTE -->
                 <div class="info-row" style="border-top: 1px dashed #e5e5ea; margin-top: 8px; padding-top: 8px;"><i data-lucide="calendar-check"></i><span class="label">Última OCA:</span><span class="value" style="color: #24b24b; font-weight: 500;">${asc.ultimaOca}</span></div>
                 <div class="info-row"><i data-lucide="calendar-days"></i><span class="label">Próxima OCA:</span><span class="value" style="color: #ff9500; font-weight: 500;">${asc.proximaOca}</span></div>
             </div>
@@ -213,7 +163,6 @@ window.abrirEditor = function(id) {
         document.getElementById('edit-tipo').value = asc.tipo;
         document.getElementById('edit-imei').value = asc.imei;
         document.getElementById('edit-tlf').value = asc.tlf;
-        // Cargar datos de OCA en la ventana modal
         document.getElementById('edit-ultima-oca').value = asc.ultimaOca || "Octubre 2025";
         document.getElementById('edit-proxima-oca').value = asc.proximaOca || "Octubre 2027";
         modal.style.display = 'flex';
@@ -234,7 +183,6 @@ if (document.getElementById('btn-save-edit')) {
             ascensoresData[idx].tipo = document.getElementById('edit-tipo').value;
             ascensoresData[idx].imei = document.getElementById('edit-imei').value;
             ascensoresData[idx].tlf = document.getElementById('edit-tlf').value;
-            // Guardar datos de OCA editados
             ascensoresData[idx].ultimaOca = document.getElementById('edit-ultima-oca').value;
             ascensoresData[idx].proximaOca = document.getElementById('edit-proxima-oca').value;
             
@@ -261,7 +209,5 @@ if (searchInput) {
     });
 }
 
-// Solo se procesan las tarjetas inicialmente si la sesión se encuentra validada
-if (localStorage.getItem('lafe_session') === 'active') {
-    renderAscensores(ascensoresData);
-}
+// CORRECCIÓN CLAVE: Dibujar siempre las tarjetas de fondo inmediatamente.
+renderAscensores(ascensoresData);
