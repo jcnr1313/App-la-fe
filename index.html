@@ -15,8 +15,8 @@
 </head>
 <body>
 
-    <!-- PANTALLA DE LOGIN (Diseño mejorado con fondo en degradado y elementos más estilizados) -->
-    <div id="login-screen" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; gap: 20px; background: linear-gradient(135deg, #0056b3 0%, #002d62 100%); padding: 20px; box-sizing: border-box;">
+    <!-- PANTALLA DE LOGIN (Ahora superpuesta de forma absoluta para no romper la ejecución de app.js) -->
+    <div id="login-screen" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; gap: 20px; background: linear-gradient(135deg, #0056b3 0%, #002d62 100%); padding: 20px; box-sizing: border-box; z-index: 99999;">
         
         <!-- CONTENEDOR VISUAL DEL LOGIN -->
         <div style="display: flex; flex-direction: column; align-items: center; width: 100%; max-width: 340px; text-align: center;">
@@ -39,8 +39,8 @@
         </div>
     </div>
 
-    <!-- CONTENIDO PRINCIPAL DE LA APP -->
-    <div id="app-content" style="display: none; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
+    <!-- CONTENIDO PRINCIPAL DE LA APP (Siempre visible en el DOM para que app.js cargue los datos sin trabas) -->
+    <div id="app-content" style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;">
         <header style="background: #ffffff; box-shadow: 0 1px 10px rgba(0,0,0,0.05); margin-bottom: 10px;">
             <!-- CONTENEDOR CON LOGO INTERNO MAXIMIZADO -->
             <div style="display: flex; flex-direction: column; align-items: center; padding: 20px 20px 15px 20px; gap: 15px; position: relative;">
@@ -101,7 +101,7 @@
 
     <!-- SCRIPT DE CONTROL DEL LOGIN, ROLES, PRIVACIDAD DE PIN Y GESTIÓN DE USUARIOS -->
     <script>
-        // Inicialización inmediata del almacén de credenciales
+        // Inicialización del almacén de credenciales si no existen
         if (!localStorage.getItem("app_users")) {
             const defaultUsers = {
                 "admin": { password: "admin", role: "admin" },
@@ -228,14 +228,13 @@
             }
         }
 
-        // Configuración de los eventos principales de interacción
+        // Manejadores globales asociados a la carga completa de elementos de la interfaz
         window.addEventListener("load", function() {
             const loginBtn = document.getElementById("btn-login");
             const logoutBtn = document.getElementById("btn-logout");
             const usernameInput = document.getElementById("username");
             const passwordInput = document.getElementById("password");
             const loginScreen = document.getElementById("login-screen");
-            const appContent = document.getElementById("app-content");
             const loginError = document.getElementById("login-error");
 
             if (loginBtn) {
@@ -246,14 +245,10 @@
 
                     if (users[userVal] && users[userVal].password === passVal) {
                         currentUserRole = users[userVal].role;
-                        loginScreen.style.display = "none";
-                        appContent.style.display = "block";
+                        loginScreen.style.display = "none"; // Ocultamos la capa flotante del login
                         if (loginError) loginError.style.display = "none";
                         
                         applyRolePermissions(currentUserRole);
-                        
-                        // Si app.js ya cargó los datos en segundo plano, forzar la lectura del PIN y los roles
-                        setTimeout(() => { applyRolePermissions(currentUserRole); }, 100);
                     } else {
                         if (loginError) loginError.style.display = "block";
                     }
@@ -270,12 +265,11 @@
                 logoutBtn.addEventListener("click", function() {
                     usernameInput.value = "";
                     passwordInput.value = "";
-                    appContent.style.display = "none";
-                    loginScreen.style.display = "flex";
+                    loginScreen.style.display = "flex"; // Volvemos a superponer el login
                 });
             }
 
-            // Observador para actualizaciones en tiempo real cuando cambie el listado de ascensores
+            // Observador para cambios dinámicos del contenedor principal (cuando app.js termine de volcar los datos)
             const container = document.getElementById("ascensores-container");
             if (container) {
                 const containerObserver = new MutationObserver(() => {
@@ -283,10 +277,13 @@
                 });
                 containerObserver.observe(container, { childList: true, subtree: true });
             }
+            
+            // Forzar primer chequeo visual nada más cargar la página por si app.js se adelantó
+            applyRolePermissions(currentUserRole);
         });
     </script>
 
-    <!-- Tu archivo externo app.js se carga de último para que use los elementos sin interrupciones -->
+    <!-- Tu archivo externo app.js se ejecuta aquí y puede interactuar con el DOM libremente -->
     <script src="app.js"></script>
 </body>
 </html>
